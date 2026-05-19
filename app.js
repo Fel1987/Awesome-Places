@@ -18,9 +18,9 @@ const Campground = require("./models/campground");
 const Review = require("./models/review");
 
 // Routes Imports
+const reviewsRoutes = require("./routes/reviews");
 const usersRoutes = require("./routes/users");
 const campgroundsRoutes = require("./routes/campgrounds");
-const reviewsRoutes = require("./routes/reviews");
 
 //Mongoose Connection
 mongoose
@@ -60,6 +60,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   next();

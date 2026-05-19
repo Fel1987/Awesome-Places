@@ -14,10 +14,15 @@
         <li class="list-group-item text-secondary">
           <%= campground.location %>
         </li>
+        <li class="list-group-item">
+          Posted by: <%= campground.author.username %>
+        </li>
         <li class="list-group-item"><%= campground.title %></li>
         <li class="list-group-item">$<%= campground.price %>/night</li>
       </ul>
-      <div class="card-body">
+
+      <% if (currentUser && campground.author.equals(currentUser._id)) { %>
+       <div class="card-body">
         <a
           class="card-link btn btn-info text-light"
           href="/campgrounds/<%= campground.id %>/edit"
@@ -34,14 +39,17 @@
           </button>
         </form>
       </div>
+      <% } %>
+      
     </div>
   </div>
 
   <aside class="col-6">
-    <h3>Leave a Review</h3>
+    <% if (currentUser) { %>
+      <h3>Leave a Review</h3>
     <form
       class="validated-form mb-3"
-      action="/campgrounds/<%= campground._id %>/review"
+      action="/campgrounds/<%= campground._id %>/reviews"
       method="POST"
       novalidate
     >
@@ -72,15 +80,20 @@
 
       <button class="btn btn-success" type="submit">Submit</button>
     </form>
+    <% } %>
+   
 
     <% campground.reviews.reverse().forEach(review => { %>
       <div class="card mb-3">
         <div class="card-body">
           <h5 class="card-title">Rating: <%= review.rating %></h5>
+          <h6 class="card-subtitle mb-2 text-muted">By: <%= review.author.username %></h6>
           <p class="card-text">Review: <%= review.body %></p>
-          <form action="/campgrounds/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
+          <% if (currentUser && review.author.equals(currentUser._id)) { %>
+            <form action="/campgrounds/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
             <button class="btn btn-sm btn-danger">Delete</button>
           </form>
+          <% } %>
         </div>
       </div>
     <% }) %>
