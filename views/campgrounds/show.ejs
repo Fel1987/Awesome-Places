@@ -1,11 +1,52 @@
 <%- layout('layouts/bolierplate') %>
+<link rel="stylesheet" href="/styles/stars.css" />
 
 
 
 <div class="row">
   <div class="col-6">
     <div class="card mb-3">
-      <img src="<%= campground.image %>" alt="" />
+   
+     <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+
+    <div class="carousel-inner">
+        <% campground.images.forEach((image, index) => { %>
+            <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                <img 
+                    class="d-block w-100"
+                    src="<%= image.url %>"
+                    alt="Campground image <%= index + 1 %>"
+                >
+            </div>
+        <% }) %>
+    </div>
+
+
+    <% if (campground.images.length>1) { %>
+      <button 
+        class="carousel-control-prev" 
+        type="button" 
+        data-bs-target="#carouselExampleControls" 
+        data-bs-slide="prev"
+    >
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    </button>
+
+    <button 
+        class="carousel-control-next" 
+        type="button" 
+        data-bs-target="#carouselExampleControls" 
+        data-bs-slide="next"
+    >
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    </button>
+    <% } %>
+
+   
+
+</div>
+
+
       <div class="card-body">
         <h5 class="card-title"><%= campground.title %></h5>
         <p class="card-text"><%= campground.description %></p>
@@ -53,7 +94,7 @@
       method="POST"
       novalidate
     >
-      <div class="mb-3">
+      <!-- <div class="mb-3">
         <label class="form-label" for="rating">Rating</label>
         <input
           class="form-range"
@@ -64,7 +105,23 @@
           max="5"
           step="1"
         />
-      </div>
+      </div> -->
+        <div class="mb-1">
+          <fieldset class="starability-basic">
+            <!-- <legend>First rating:</legend> -->
+            <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+            <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+            <label for="first-rate1" title="Terrible">1 star</label>
+            <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+            <label for="first-rate2" title="Not good">2 stars</label>
+            <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+            <label for="first-rate3" title="Average">3 stars</label>
+            <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+            <label for="first-rate4" title="Very good">4 stars</label>
+            <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+            <label for="first-rate5" title="Amazing">5 stars</label>
+          </fieldset>
+        </div>
 
       <div class="mb-3">
         <label class="form-label" for="body">Review:</label>
@@ -86,8 +143,10 @@
     <% campground.reviews.reverse().forEach(review => { %>
       <div class="card mb-3">
         <div class="card-body">
-          <h5 class="card-title">Rating: <%= review.rating %></h5>
           <h6 class="card-subtitle mb-2 text-muted">By: <%= review.author.username %></h6>
+          <p class="starability-result" data-rating="<%= review.rating %>">
+            Rated: <%= review.rating %> stars
+          </p>
           <p class="card-text">Review: <%= review.body %></p>
           <% if (currentUser && review.author.equals(currentUser._id)) { %>
             <form action="/campgrounds/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
