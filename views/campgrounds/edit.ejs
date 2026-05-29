@@ -8,6 +8,7 @@
       action="/campgrounds/<%= campground.id %>?_method=PUT"
       method="POST"
       novalidate
+      enctype="multipart/form-data"
     >
       <div class="mb-3">
         <label class="form-label" for="title">Campground Title</label>
@@ -34,16 +35,18 @@
       </div>
 
       <div class="mb-3">
-        <label class="form-label" for="image">Image Url</label>
-        <input
-          value="<%= campground.image %>"
-          class="form-control"
-          type="text"
-          name="campground[image]"
-          id="image"
-          required
-        />
+        <label class="form-label">Add images</label>
+
+        <div id="drop-zone" class="drop-zone">
+          <p>Drag & drop images here or click to select</p>
+
+          <input type="file" multiple name="image" id="image" hidden />
+        </div>
+
+        <div id="file-list" class="file-list"></div>
       </div>
+
+
 
       <div class="mb-3">
         <label for="description">Description</label>
@@ -71,7 +74,17 @@
           />
         </div>
       </div>
-
+      <div class="mb-3"">
+        <% campground.images.forEach((image,index) => { %>
+          <div>
+          <img class="img-thumbnail" src="<%= image.thumbnail %>"></img>
+          <div class="form-check-inline">
+            <label for="image-<%= index %>">Delete?</label>
+            <input type="checkbox" name='deleteImages[]' value="<%= image.filename %>" id="image-<%= index %>">
+          </div>
+          </div>
+        <% }) %>
+      </div>
       <div class="mb-3">
         <button class="btn btn-info text-light" type="submit">
           Save changes

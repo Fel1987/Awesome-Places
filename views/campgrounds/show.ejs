@@ -1,5 +1,6 @@
 <%- layout('layouts/bolierplate') %>
 <link rel="stylesheet" href="/styles/stars.css" />
+<link rel="stylesheet" href="/styles/campgroundsimages.css" />
 
 
 
@@ -13,7 +14,7 @@
         <% campground.images.forEach((image, index) => { %>
             <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
                 <img 
-                    class="d-block w-100"
+                    class="d-block w-100 campground-images"
                     src="<%= image.url %>"
                     alt="Campground image <%= index + 1 %>"
                 >

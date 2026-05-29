@@ -3,6 +3,14 @@ const Review = require("./review");
 const User = require("./user");
 const Schema = mongoose.Schema;
 
+// https://res.cloudinary.com/dzjlhczw0/image/upload/w_100/v1780089045/campgound-images/et6nkjk3uqvwhbt1zqn7.jpg\\\
+
+const ImageSchema = new Schema({ url: String, filename: String });
+
+ImageSchema.virtual("thumbnail").get(function () {
+  return this.url.replace("/upload", "/upload/w_200");
+});
+
 const campgroundSchema = new Schema({
   title: {
     type: String,
@@ -10,7 +18,7 @@ const campgroundSchema = new Schema({
   price: {
     type: Number,
   },
-  images: [{ url: String, filename: String }],
+  images: [ImageSchema],
 
   description: {
     type: String,

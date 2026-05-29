@@ -1,4 +1,5 @@
 const Campground = require("../models/campground");
+const { cloudinary } = require("../cloudinary");
 
 module.exports.index = async (req, res) => {
   const campgrounds = await Campground.find({});
@@ -12,6 +13,12 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.createCampground = async (req, res, next) => {
   const campground = new Campground(req.body.campground);
+
+  if (req.files.length > 5) {
+    req.flash("error", "You can upload a maximum of 5 images");
+    return res.redirect("/campgrounds/new");
+  }
+
   campground.images = req.files.map((file) => {
     return { url: file.path, filename: file.filename };
   });
@@ -47,10 +54,31 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.updateCampground = async (req, res) => {
   const { id } = req.params;
-
+  const newImages = req.files.map((file) => {
+    return { url: file.path, filename: file.filename };
+  });
   const campground = await Campground.findByIdAndUpdate(id, {
     ...req.body.campground,
   });
+
+  if (campground.images.length >= 5) {
+    req.flash("error", "Cannot upload anymore images");
+    return res.redirect(`/campgrounds/${campground._id}`);
+  }
+
+  campground.images.push(...newImages);
+  await campground.save();
+
+  if (req.body.deleteImages) {
+    for (const filename of req.body.deleteImages) {
+      await cloudinary.uploader.destroy(filename);
+    }
+
+    await campground.updateOne({
+      $pull: { images: { filename: { $in: req.body.deleteImages } } },
+    });
+  }
+
   req.flash("success", "Campground succesfully updated");
   res.redirect(`/campgrounds/${campground._id}`);
 };
